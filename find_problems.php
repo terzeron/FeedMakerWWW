@@ -5,3 +5,4 @@
 	txt2html($content);
 	?>
 </div>
+<?include("diff.html");?>

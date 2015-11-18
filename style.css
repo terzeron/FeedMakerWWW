@@ -66,4 +66,5 @@ h5 { font-size: 11pt; font-weight: normal; color: green; margin-top: 10px; margi
 .c39 { color: black; }
 li { margin: 5px 5px 5px 5px; }
 br { margin: 0px; }
-
+th { padding: 5px; border: 1px gray solid; background-color: black; color: white; } 
+td { padding: 5px; border: 1px gray solid; }
