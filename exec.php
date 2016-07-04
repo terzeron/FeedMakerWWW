@@ -74,6 +74,14 @@ function save($parent_name, $feed_name)
 	return -1;
     }
     fclose($fp);
+
+    // git add
+    $cmd = "git add $dir/${feed_name}.xml";
+    $result = shell_exec($cmd);
+    if (preg_match("/Error:/", $result)) {
+	$message = "can't execute a 'save' command '$cmd', $result";
+	return -1;
+    }
     
     return 0;
 }
@@ -87,7 +95,7 @@ function lint($feed_name)
     $cmd = "/usr/bin/xmllint --noout $dir/${feed_name}.xml";
     $result = system($cmd);
     if ($result != "") {
-	$message = "can't execute lint command";
+	$message = "can't execute a 'lint' command";
 	return -1;
     }
 
@@ -116,7 +124,7 @@ function extract_data($parent_name, $feed_name)
 		2> $work_dir/$parent_name/$feed_name/run.log";
     $result = shell_exec($cmd);
     if (preg_match("/Error:/", $result)) {
-	$message = "can't execute extract command '$cmd', $result";
+	$message = "can't execute a 'extract' command '$cmd', $result";
 	return -1;
     }
     $message = $cmd . "," . $result;
