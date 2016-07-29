@@ -1,4 +1,3 @@
-<?header("Cache-Control: no-cache, must-revalidate");?>
 <!DOCTYPE HTML>
 <html>
   <head>

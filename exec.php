@@ -1,7 +1,7 @@
 <?php
 header("Cache-Control: no-cache; must-revalidate;");
 
-require_once("common.inc");
+require_once("common.php");
 
 $message = "";
 $dir = "xmls";

@@ -1,5 +1,5 @@
 <?php
-require_once("common.inc");
+require_once("common.php");
 
 $feed_dir = $_GET{"feed_dir"};
 $feed_name = $_GET{"feed_name"};
