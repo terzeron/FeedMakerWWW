@@ -1,5 +1,6 @@
 <?php
 header("Cache-Control: no-cache; must-revalidate;");
+error_reporting(E_ALL);
 
 require_once("common.php");
 
@@ -7,17 +8,21 @@ $message = "";
 $dir = "xmls";
 
 
-function get_feed_list($parent_name)
+function get_feed_list($category_name)
 {
     global $work_dir, $dir, $message;
 
-    $feed_list = array("피드선택");
-    $dir = $work_dir . "/" . $parent_name;
-    if (is_dir($dir)) {
-        if ($dh = opendir($dir)) {
-            while (($fd_dir = readdir($dh))) {
-                if (file_exists($dir . "/" . $fd_dir . "/conf.xml")) {
-                    array_push($feed_list, $fd_dir);
+    $feed_list = array();
+    $category_path = $work_dir . "/" . $category_name;
+    if (is_dir($category_path)) {
+        if ($dh = opendir($category_path)) {
+            while (($feed_name = readdir($dh))) {
+		if ($feed_name == "." or $feed_name == "..") {
+		    continue;
+		}
+		$conf_file_path = $category_path . "/" . $feed_name . "/conf.xml";
+                if (file_exists($conf_file_path)) {
+                    array_push($feed_list, $feed_name);
                 }
             }
         }
@@ -28,11 +33,11 @@ function get_feed_list($parent_name)
 }
 
 
-function get_feed_content($parent_name,  $sample_feed)
+function get_feed_content($category_name,  $sample_feed)
 {
     global $work_dir, $dir, $message;
 
-    $filepath = $work_dir . "/" . $parent_name . "/" . $sample_feed . "/conf.xml";  
+    $filepath = $work_dir . "/" . $category_name . "/" . $sample_feed . "/conf.xml";  
     $xml_text = "";                                                           
     if (file_exists($filepath)) {
         $fp = fopen($filepath, "r");                                                
@@ -51,11 +56,11 @@ function get_feed_content($parent_name,  $sample_feed)
 }
 
 
-function save($parent_name, $feed_name)
+function save($category_name, $feed_name)
 {
     global $work_dir, $dir, $message;
 
-    $filepath = $work_dir . "/" . $parent_name . "/" . $feed_name . "/conf.xml";
+    $filepath = $work_dir . "/" . $category_name . "/" . $feed_name . "/conf.xml";
     if (file_exists($filepath)) {
         $message = "can't overwrite the existing file";
         return -1;
@@ -103,13 +108,13 @@ function lint($feed_name)
 }
 
 
-function extract_data($parent_name, $feed_name)
+function extract_data($category_name, $feed_name)
 {
     global $home_dir, $engine_dir, $work_dir, $www_dir, $dir, $message;
 
-    mkdir("${work_dir}/${parent_name}/${feed_name}");
-    chdir("${work_dir}/${parent_name}/${feed_name}");
-    if (!rename("${www_dir}/fm/xmls/${feed_name}.xml", "${work_dir}/${parent_name}/${feed_name}/conf.xml")) {
+    mkdir("${work_dir}/${category_name}/${feed_name}");
+    chdir("${work_dir}/${category_name}/${feed_name}");
+    if (!rename("${www_dir}/fm/xmls/${feed_name}.xml", "${work_dir}/${category_name}/${feed_name}/conf.xml")) {
         $message = "can't rename the conf file";
         return -1;
     }
@@ -122,8 +127,8 @@ function extract_data($parent_name, $feed_name)
                 recent_collection_list=\$([ -e newlist ] && find newlist -type f -mtime +144); \
                 if [ \"\$is_completed\" != \"\" -a \"\$recent_collection_list\" == \"\" ]; then run.sh -c; fi; \
                 run.sh) \
-                > $work_dir/$parent_name/$feed_name/run.log \
-                2> $work_dir/$parent_name/$feed_name/run.log";
+                > $work_dir/$category_name/$feed_name/run.log \
+                2> $work_dir/$category_name/$feed_name/run.log";
     $result = shell_exec($cmd);
     if (preg_match("/Error:/", $result)) {
         $message = "can't execute a 'extract' command '$cmd', $result";
@@ -135,7 +140,7 @@ function extract_data($parent_name, $feed_name)
 }
 
 
-function setacl($parent_name, $feed_name, $sample_feed)
+function setacl($category_name, $feed_name, $sample_feed)
 {
     global $www_dir, $dir, $message;
 
@@ -176,7 +181,7 @@ function setacl($parent_name, $feed_name, $sample_feed)
 }
 
 
-function remove($parent_name, $sample_feed)
+function remove($category_name, $sample_feed)
 {
     global $work_dir, $www_dir, $dir, $message;
 
@@ -219,7 +224,7 @@ function remove($parent_name, $sample_feed)
     //
     // 피드 디렉토리 정리
     //
-    $cmd = "rm -f ${www_dir}/xml/${sample_feed}.xml; cd ${work_dir}/${parent_name}; git rm ${sample_feed}/conf.xml > /dev/null; rm -rf ${sample_feed}";
+    $cmd = "rm -f ${www_dir}/xml/${sample_feed}.xml; cd ${work_dir}/${category_name}; git rm ${sample_feed}/conf.xml > /dev/null; rm -rf ${sample_feed}";
     $result = system($cmd);
     if ($result != "") { 
         $message = "can't clean the feed directory, $result";
@@ -230,7 +235,7 @@ function remove($parent_name, $sample_feed)
 }
 
 
-function disable($parent_name, $sample_feed)
+function disable($category_name, $sample_feed)
 {
     global $work_dir, $www_dir, $dir, $message;
 
@@ -273,7 +278,7 @@ function disable($parent_name, $sample_feed)
     //
     // 피드 디렉토리 정리
     //
-    $cmd = "rm -f ${www_dir}/xml/${sample_feed}.xml; cd ${work_dir}/${parent_name}; mv ${sample_feed}  _${sample_feed}; cd _${sample_feed}; rm -rf run.log error.log cookie.txt html newlist ${sample_feed}.xml ${sample_feed}.xml.old start_idx.txt";
+    $cmd = "rm -f ${www_dir}/xml/${sample_feed}.xml; cd ${work_dir}/${category_name}; mv ${sample_feed}  _${sample_feed}; cd _${sample_feed}; rm -rf run.log error.log cookie.txt html newlist ${sample_feed}.xml ${sample_feed}.xml.old start_idx.txt";
     $result = system($cmd);
     if ($result != "") { 
         $message = "can't clean the feed directory, $result";
@@ -297,8 +302,8 @@ function exec_command()
         $message = "The feed name must be only alphanumeric word.";
         return -1;
     }
-    $parent_name = $_POST["parent_name"];
-    if (!preg_match("/^[\w_\-\.]*$/", $parent_name)){
+    $category_name = $_POST["category_name"];
+    if (!preg_match("/^[\w_\-\.]*$/", $category_name)){
         $message = "The parent name must be only alphanumeric word.";
         return -1;
     }
@@ -309,21 +314,21 @@ function exec_command()
     }
     $command = $_POST["command"];
     if ($command == "get_feed_list"){
-        return get_feed_list($parent_name);
+        return get_feed_list($category_name);
     } else if ($command == "get_feed_content"){
-        return get_feed_content($parent_name, $sample_feed);
+        return get_feed_content($category_name, $sample_feed);
     } else if ($command == "save"){
-        return save($parent_name, $feed_name);
+        return save($category_name, $feed_name);
     } else if ($command == "lint"){
         return lint($feed_name);
     } else if ($command == "extract"){
-        return extract_data($parent_name, $feed_name);
+        return extract_data($category_name, $feed_name);
     } else if ($command == "setacl"){
-        return setacl($parent_name, $feed_name, $sample_feed);
+        return setacl($category_name, $feed_name, $sample_feed);
     } else if ($command == "remove"){
-        return remove($parent_name, $sample_feed);
+        return remove($category_name, $sample_feed);
     } else if ($command == "disable"){
-        return disable($parent_name, $sample_feed);
+        return disable($category_name, $sample_feed);
     } else {
         $message = "can't identify the command";
         return -1;

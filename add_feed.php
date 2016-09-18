@@ -1,60 +1,55 @@
 <?php
 require_once("common.php");
+error_reporting(E_ALL);
 
-$feed_dir = $_GET{"feed_dir"};
-$feed_name = $_GET{"feed_name"};
+//
+// initialization
+//
 
-// get category list
-$dir_list = array("카테고리 선택");
-if (is_dir($work_dir)) {
-    if ($dh = opendir($work_dir)) {
-        while (($dir = readdir($dh))) {
-            if (!preg_match("/(\.|\.\.|bin|log|test)/", $dir) && $dir[0] != "_" && is_dir($work_dir . "/" . $dir)) {
-                array_push($dir_list, $dir);
-            }
-        }
-    }
-}
-
-if ($feed_name) {
-    if (is_dir($work_dir)) {
-        if ($dh = opendir($work_dir)) {
-            while (($dir = readdir($dh))) {
-                if ($dh2 = opendir($work_dir . "/" . $dir)) {
-                    while (($file = readdir($dh2))) {
-                        if ($file == $feed_name) {
-                            $feed_dir = $dir;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+$feed_dir = (array_key_exists("feed_dir", $_GET) ? $_GET{"feed_dir"} : "");
+$feed_name = (array_key_exists("feed_name", $_GET) ? $_GET{"feed_name"} : "");
+list($id2conf_map, $category_list) = scan_dirs($work_dir);
+$feed_dir = determine_current_feed_dir($work_dir, $feed_name);
 ?>
 
 <script src="jquery-2.1.4.min.js"></script>
 <script src="jquery-ui-1.11.4/jquery-ui.min.js"></script>
+<script type="text/javascript">
+<?print_id2name_map($id2conf_map);?>
+</script>
 
-<h4>Feed 추가</h4>
-
-<div class="block">
-    <div>
-        카테고리: <select id="dir_list" name="category_dir">
-        <?foreach ($dir_list as $k) {?>
-            <option name="<?=$k?>" value="<?=$k?>"><?=$k?></option>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        카테고리: <!--select id="category_list" name="category_dir"-->
+        <?foreach ($category_list as $k) {?>
+            <!--option name="<?=$k?>" value="<?=$k?>"><?=$k?></option-->
         <?}?>
-        </select>
-        &nbsp;
-        샘플 피드: <select id="feed_list" name="feed_dir">
-        </select>
+        <!--/select-->
     </div>
-
-    <div id="xml">
+    <div class="panel-body">
+        <div id="category_list">
+            <?foreach ($category_list as $k) {?>
+                <button type="button" class="btn btn-<?=($k[0] != '_' ? 'primary' : 'warning')?>" onclick="selectCategory('<?=$k?>');"><?=$k?></button>
+            <?}?>
+        </div>
     </div>
+</div>
 
-    <div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        샘플 피드: <!--select id="feed_list" name="feed_dir">
+                   </select-->
+    </div>
+    <div class="panel-body">
+        <div id="feed_list"></div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div id="xml" class="panel-body">
+    </div>
+    
+    <div class="panel-body">
         <div>새로운 Feed 이름: <input type='text' id='feed_name' name='feed_name'/>.xml에 <input type='button' id='save' value='저장'/></div>
         <span>
             <input type='button' id='lint' value='XML lint 실행'/>
@@ -90,71 +85,72 @@ function get_success_message(str) {
     return "<span style='color:green;'>" + str + "</span>";
 }
 
-// dir_list selectbox event handler
-$("#dir_list").change(function() {
-    $("#dir_list option:selected").each(function() {
-        var parent_name = $(this).val();
-        $.post(
-            ajax_url,
-            { "command": "get_feed_list", "parent_name": parent_name },
-            function(data, textStatus, jqXHR) {
-                res = jQuery.parseJSON(data);
-                if (res["result"] != "0") {
-                    alert("can't get feed list");
-                } else {
-                    html = "";
-                    for (var i = 0; i < res["message"].length; i++) {
-                        html += '<option value="' + res["message"][i] + '">' + res["message"][i] + '</option>'; 
-                    }
-                    $("#feed_list").html(html);
-                    <?if ($feed_name) {?>
-                    $("#feed_list").val("<?=$feed_name?>");
-                    $("#feed_list").trigger("change");
-                    <?}?>
+selectCategory = function(category_name) {
+    $.post(
+        ajax_url,
+        { "command": "get_feed_list", "category_name": category_name },
+        function(data, textStatus, jqXHR) {
+            res = jQuery.parseJSON(data);
+            if (res["result"] != "0") {
+                alert("can't get feed list");
+            } else {
+                html = "";
+                for (var i = 0; i < res["message"].length; i++) {
+                    var feed_name = res["message"][i];
+                    html += '<button type="button" class="btn btn-' + (feed_name[0] != '_' ? 'primary' : 'warning') + '" onclick="selectFeed(\'' + category_name + '\', \''+ feed_name + '\');">' + id2name_map[feed_name] + '</button>\n'
                 }
+                $("#feed_list").html(html);
+               <?if ($feed_name) {?>
+                $("#feed_list").val("<?=$feed_name?>");
+                $("#feed_list").trigger("change");
+                <?}?>
             }
-        );
-    });
+        }
+    );
     resetHandler();
-});
+};
 
-$("#feed_list").change(function() {
-    $("#feed_list option:selected").each(function() {
-        var parent_name = $("#dir_list").val();
-        var sample_feed = $(this).val();
-        $.post(
-            ajax_url,
-            { "command": "get_feed_content", "sample_feed": $(this).val(), "parent_name": $("#dir_list").val() },
-            function(data, textStatus, jqXHR) {
-                res = jQuery.parseJSON(data);
-                if (res["result"] != "0") {
-                    alert("can't get feed content");
-                } else {
-                    html = res["message"];
-                    new_html = html;
-                    new_html = new_html.replace(/</g, "&lt;")
-                        .replace(/>/g, "&gt;<br/>")
-                        .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
-                        .replace(/&lt;!\[CDATA\[(.*)\]\]&gt;/g, "&lt;![CDATA[<input class='cdata' type='text' value=\"\$1\" size='100'/>]]&gt;");
-                    $("#xml").html(new_html);
-                }
+selectFeed = function(category_name, sample_feed_name) {
+    $.post(
+        ajax_url,
+        { "command": "get_feed_content", "sample_feed": sample_feed_name, "category_name": category_name },
+        function(data, textStatus, jqXHR) {
+            res = jQuery.parseJSON(data);
+            if (res["result"] != "0") {
+                alert("can't get feed content");
+            } else {
+                html = res["message"];
+                new_html = html;
+                new_html = new_html.replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;<br/>")
+                    .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
+                    .replace(/&lt;!\[CDATA\[(.*)\]\]&gt;/g, "&lt;![CDATA[<input class='cdata' type='text' value=\"\$1\" size='100'/>]]&gt;");
+                $("#xml").html(new_html);
             }
-        );
-    });
+        }
+    );
     resetHandler();
-});
+};
 
 
 $(document).ready(function() {
-    $("#dir_list").val("<?=$feed_dir?>");
-    $("#dir_list").trigger("change");
+    <?if ($feed_dir != "") {?>
+    setTimeout(function() {
+	selectCategory("<?=$feed_dir?>");
+	<?if ($feed_name != "") {?>
+	setTimeout(function() {
+	    selectFeed("<?=$feed_dir?>", "<?=$feed_name?>");
+	}, 200);
+	<?}?>
+    }, 100);
+    <?}?>
 });
 
 // save button event handler
 var saveHandler = function() {
     $("#save").val("저장 중");
     var feed_name = $("#feed_name").val();
-    var parent_name = $("#dir_list").val();
+    var category_name = $("#category_list").val();
     var sample_feed = $("#feed_list option:selected").val();
     if (check_feed_name(feed_name) < 0) {
         return -1;
@@ -163,7 +159,7 @@ var saveHandler = function() {
     var xml_text = replace_form_with_cdata(cdata_arr);
     $.post(
         ajax_url,
-        { "command": "save", "feed_name": feed_name, "parent_name": parent_name, "sample_feed": sample_feed, "xml_text": xml_text },
+        { "command": "save", "feed_name": feed_name, "category_name": category_name, "sample_feed": sample_feed, "xml_text": xml_text },
         function(data, textStatus, jqXHR) {
             res = jQuery.parseJSON(data);
             if (res["result"] != "0") {
@@ -181,11 +177,11 @@ var saveHandler = function() {
 var lintHandler = function() {
     $("#lint").val("XML lint 실행 중");
     var feed_name = $("#feed_name").val();
-    var parent_name = $("#dir_list").val();
+    var category_name = $("#category_list").val();
     var sample_feed = $("#feed_list option:selected").val();
     $.post(
         ajax_url,
-        { "command": "lint", "feed_name": feed_name, "parent_name": parent_name, "sample_feed": sample_feed },
+        { "command": "lint", "feed_name": feed_name, "category_name": category_name, "sample_feed": sample_feed },
         function(data, textStatus, jqXHR) {
             res = jQuery.parseJSON(data);
             if (res["result"] != "0") {
@@ -203,11 +199,11 @@ var lintHandler = function() {
 var extractHandler = function() {
     $("#extract").val("추출 실행 중");
     var feed_name = $("#feed_name").val();
-    var parent_name = $("#dir_list").val();
+    var category_name = $("#category_list").val();
     var sample_feed = $("#feed_list option:selected").val();
     $.post(
         ajax_url,
-        { "command": "extract", "feed_name": feed_name, "parent_name": parent_name, "sample_feed": sample_feed },
+        { "command": "extract", "feed_name": feed_name, "category_name": category_name, "sample_feed": sample_feed },
         function(data, textStatus, jqXHR) {
             res = jQuery.parseJSON(data);
             if (res["result"] != "0") {
@@ -226,11 +222,11 @@ var extractHandler = function() {
 var setAclHandler = function() {
     $("setacl").val("ACL 설정 중");
     var feed_name = $("#feed_name").val();
-    var parent_name = $("#dir_list").val();
+    var category_name = $("#category_list").val();
     var sample_feed = $("#feed_list option:selected").val();
     $.post(
         ajax_url,
-        { "command": "setacl", "feed_name": feed_name, "parent_name": parent_name, "sample_feed": sample_feed },
+        { "command": "setacl", "feed_name": feed_name, "category_name": category_name, "sample_feed": sample_feed },
         function(data, textStatus, jqXHR) {
             res = jQuery.parseJSON(data);
             if (res["result"] != "0") {
@@ -267,11 +263,11 @@ var resetHandler = function() {
 var removeHandler = function() {
     $("remove").val("삭제 중");
     //var feed_name = $("#feed_name").val();
-    var parent_name = $("#dir_list").val();
+    var category_name = $("#category_list").val();
     var sample_feed = $("#feed_list option:selected").val();
     $.post(
         ajax_url,
-        { "command": "remove", "parent_name": parent_name, "sample_feed": sample_feed },
+        { "command": "remove", "category_name": category_name, "sample_feed": sample_feed },
         function(data, textStatus, jqXHR) {
             res = jQuery.parseJSON(data);
             if (res["result"] != "0") {
@@ -289,11 +285,11 @@ var removeHandler = function() {
 var disableHandler = function() {
     $("disable").val("비활성화 중");
     //var feed_name = $("#feed_name").val();
-    var parent_name = $("#dir_list").val();
+    var category_name = $("#category_list").val();
     var sample_feed = $("#feed_list option:selected").val();
     $.post(
         ajax_url,
-        { "command": "disable", "parent_name": parent_name, "sample_feed": sample_feed },
+        { "command": "disable", "category_name": category_name, "sample_feed": sample_feed },
         function(data, textStatus, jqXHR) {
             res = jQuery.parseJSON(data);
             if (res["result"] != "0") {
