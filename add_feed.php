@@ -68,6 +68,7 @@ $feed_dir = determine_current_feed_dir($work_dir, $feed_name);
 
 <script type="text/javascript">
 var ajax_url = "exec.php";
+var selectedCategory;
 
 function check_feed_name(feed_name) {
     if (feed_name == undefined || feed_name == "") {
@@ -111,6 +112,7 @@ selectCategory = function(category_name) {
                 $("#feed_list").val("<?=$feed_name?>");
                 $("#feed_list").trigger("change");
                 <?}?>
+		selectedCategory = category_name;
             }
         }
     );
@@ -157,7 +159,7 @@ $(document).ready(function() {
 var saveHandler = function() {
     $("#save").val("저장 중");
     var feed_name = $("#feed_name").val();
-    var category_name = $("#category_list").val();
+    var category_name = selectedCategory;
     var sample_feed = $("#feed_list option:selected").val();
     if (check_feed_name(feed_name) < 0) {
         return -1;
@@ -184,7 +186,7 @@ var saveHandler = function() {
 var lintHandler = function() {
     $("#lint").val("XML lint 실행 중");
     var feed_name = $("#feed_name").val();
-    var category_name = $("#category_list").val();
+    var category_name = selectedCategory;
     var sample_feed = $("#feed_list option:selected").val();
     $.post(
         ajax_url,
@@ -206,7 +208,7 @@ var lintHandler = function() {
 var extractHandler = function() {
     $("#extract").val("추출 실행 중");
     var feed_name = $("#feed_name").val();
-    var category_name = $("#category_list").val();
+    var category_name = selectedCategory;
     var sample_feed = $("#feed_list option:selected").val();
     $.post(
         ajax_url,
@@ -229,7 +231,7 @@ var extractHandler = function() {
 var setAclHandler = function() {
     $("setacl").val("ACL 설정 중");
     var feed_name = $("#feed_name").val();
-    var category_name = $("#category_list").val();
+    var category_name = selectedCategory;
     var sample_feed = $("#feed_list option:selected").val();
     $.post(
         ajax_url,
@@ -270,7 +272,7 @@ var resetHandler = function() {
 var removeHandler = function() {
     $("remove").val("삭제 중");
     //var feed_name = $("#feed_name").val();
-    var category_name = $("#category_list").val();
+    var category_name = selectedCategory;
     var sample_feed = $("#feed_list option:selected").val();
     $.post(
         ajax_url,
@@ -292,7 +294,7 @@ var removeHandler = function() {
 var disableHandler = function() {
     $("disable").val("비활성화 중");
     //var feed_name = $("#feed_name").val();
-    var category_name = $("#category_list").val();
+    var category_name = selectedCategory;
     var sample_feed = $("#feed_list option:selected").val();
     $.post(
         ajax_url,
