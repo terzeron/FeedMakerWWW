@@ -94,10 +94,17 @@ selectCategory = function(category_name) {
             if (res["result"] != "0") {
                 alert("can't get feed list");
             } else {
-                html = "";
+		var id_list = [];
                 for (var i = 0; i < res["message"].length; i++) {
-                    var feed_name = res["message"][i];
-                    html += '<button type="button" class="btn btn-' + (feed_name[0] != '_' ? 'primary' : 'warning') + '" onclick="selectFeed(\'' + category_name + '\', \''+ feed_name + '\');">' + id2name_map[feed_name] + '</button>\n'
+                    var feed_id = res["message"][i];
+		    id_list.push(feed_id);
+                }
+		sorted_list = id_list.sort(function(a, b) { return id2name_map[a].localeCompare(id2name_map[b]); });
+		console.log(sorted_list);
+                html = "";
+                for (var i = 0; i < sorted_list.length; i++) {
+		    var feed_id = sorted_list[i];
+                    html += '<button type="button" class="btn btn-' + (feed_id[0] != '_' ? 'primary' : 'warning') + '" onclick="selectFeed(\'' + category_name + '\', \''+ feed_id + '\');">' + id2name_map[feed_id] + '</button>\n';
                 }
                 $("#feed_list").html(html);
                <?if ($feed_name) {?>
