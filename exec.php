@@ -7,6 +7,15 @@ require_once("common.php");
 $message = "";
 $dir = "xmls";
 
+date_default_timezone_set("Asia/Seoul");
+
+
+function get_time_str()
+{
+    $now = new DateTime();
+    return $now->format("YmdHis");
+}
+
 
 function get_feed_list($category_name)
 {
@@ -144,13 +153,11 @@ function setacl($category_name, $feed_name, $sample_feed)
 {
     global $www_dir, $dir, $message;
 
-    //date_default_timezone_set("Asia/Seoul");
-    
-    $timestamp = strftime("%y%m%d%H%M%S");
-    $cmd = "cp ${www_dir}/.htaccess ${www_dir}/.htaccess.$timestamp";
+    $time_str = get_time_str();
+    $cmd = "cp ${www_dir}/.htaccess ${www_dir}/.htaccess.$time_str";
     $ret = shell_exec($cmd);
     $infile = "${www_dir}/.htaccess";
-    $outfile = $infile . ".temp." . $timestamp;
+    $outfile = $infile . ".temp." . $time_str;
 
     $infp = fopen($infile, "r");
     if (!$infp) {
@@ -189,11 +196,11 @@ function remove($category_name, $sample_feed)
     // ACL 설정 제거
     //
 
-    $timestamp = strftime("%y%m%d%H%M%S");
-    $cmd = "cp ${www_dir}/.htaccess ${www_dir}/.htaccess.$timestamp";
+    $time_str = get_time_str();
+    $cmd = "cp ${www_dir}/.htaccess ${www_dir}/.htaccess.$time_str";
     $ret = shell_exec($cmd);
     $infile = "${www_dir}/.htaccess";
-    $outfile = $infile.".temp.".$timestamp;
+    $outfile = $infile.".temp.".$time_str;
 
     $infp = fopen($infile,"r");
     if (!$infp) {
@@ -243,11 +250,11 @@ function disable($category_name, $sample_feed)
     // ACL 설정 제거
     //
 
-    $timestamp = strftime("%y%m%d%H%M%S");
-    $cmd = "cp ${www_dir}/.htaccess ${www_dir}/.htaccess.$timestamp";
+    $time_str = get_time_str();
+    $cmd = "cp ${www_dir}/.htaccess ${www_dir}/.htaccess.$time_str";
     $ret = shell_exec($cmd);
     $infile = "${www_dir}/.htaccess";
-    $outfile = $infile.".temp.".$timestamp;
+    $outfile = $infile.".temp.".$time_str;
 
     $infp = fopen($infile,"r");
     if (!$infp) {
