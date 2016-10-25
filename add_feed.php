@@ -69,6 +69,7 @@ $feed_dir = determine_current_feed_dir($work_dir, $feed_name);
 <script type="text/javascript">
 var ajax_url = "exec.php";
 var selectedCategory;
+var selectedSampleFeed;
 
 function check_feed_name(feed_name) {
     if (feed_name == undefined || feed_name == "") {
@@ -108,10 +109,6 @@ selectCategory = function(category_name) {
                     html += '<button type="button" class="btn btn-' + (feed_id[0] != '_' ? 'primary' : 'warning') + '" onclick="selectFeed(\'' + category_name + '\', \''+ feed_id + '\');">' + id2name_map[feed_id] + '</button>\n';
                 }
                 $("#feed_list").html(html);
-               <?if ($feed_name) {?>
-                $("#feed_list").val("<?=$feed_name?>");
-                $("#feed_list").trigger("change");
-                <?}?>
 		selectedCategory = category_name;
             }
         }
@@ -135,6 +132,7 @@ selectFeed = function(category_name, sample_feed_name) {
                     .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
                     .replace(/&lt;!\[CDATA\[(.*)\]\]&gt;/g, "&lt;![CDATA[<input class='cdata' type='text' value=\"\$1\" size='100'/>]]&gt;");
                 $("#xml").html(new_html);
+		selectedSampleFeed = sample_feed_name;
             }
         }
     );
@@ -232,7 +230,7 @@ var setAclHandler = function() {
     $("setacl").val("ACL 설정 중");
     var feed_name = $("#feed_name").val();
     var category_name = selectedCategory;
-    var sample_feed = $("#feed_list option:selected").val();
+    var sample_feed = selectedSampleFeed;
     $.post(
         ajax_url,
         { "command": "setacl", "feed_name": feed_name, "category_name": category_name, "sample_feed": sample_feed },
@@ -271,9 +269,8 @@ var resetHandler = function() {
 // remove button event handler
 var removeHandler = function() {
     $("remove").val("삭제 중");
-    //var feed_name = $("#feed_name").val();
     var category_name = selectedCategory;
-    var sample_feed = $("#feed_list option:selected").val();
+    var sample_feed = selectedSampleFeed;
     $.post(
         ajax_url,
         { "command": "remove", "category_name": category_name, "sample_feed": sample_feed },
@@ -293,9 +290,8 @@ var removeHandler = function() {
 // remove button event handler
 var disableHandler = function() {
     $("disable").val("비활성화 중");
-    //var feed_name = $("#feed_name").val();
     var category_name = selectedCategory;
-    var sample_feed = $("#feed_list option:selected").val();
+    var sample_feed = selectedSampleFeed;
     $.post(
         ajax_url,
         { "command": "disable", "category_name": category_name, "sample_feed": sample_feed },
