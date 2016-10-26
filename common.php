@@ -62,7 +62,7 @@ function scan_dirs($work_dir)
 	if ($dh = opendir($work_dir)) {
 	    while (($dir1 = readdir($dh))) {
 		$category_dir_path = $work_dir . "/" . $dir1;
-		if ($dir1 == "." or $dir1 == ".." or !is_dir($category_dir_path)) {
+		if ($dir1 == "." or $dir1 == ".." or $dir1[0] == "." or $dir1[0] == "_" or !is_dir($category_dir_path) or $dir1 == "test") {
 		    continue;
 		}
 		array_push($category_list, $dir1);

@@ -26,7 +26,7 @@ function get_feed_list($category_name)
     if (is_dir($category_path)) {
         if ($dh = opendir($category_path)) {
             while (($feed_name = readdir($dh))) {
-		if ($feed_name == "." or $feed_name == "..") {
+		if ($feed_name == "." or $feed_name == ".." or $feed_name[0] == "." or $feed_name[0] == "_") {
 		    continue;
 		}
 		$conf_file_path = $category_path . "/" . $feed_name . "/conf.xml";
