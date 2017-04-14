@@ -3,3 +3,4 @@ xmls/*
 diff.html
 .htaccess
 .htpasswd
+oauth/vendor

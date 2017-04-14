@@ -1,6 +1,6 @@
 <?php
-require_once("common.php");
-error_reporting(E_ALL);
+require_once "oauth/oauth_check.php";
+require_once "common.php";
 
 //
 // initialization
@@ -12,8 +12,8 @@ list($id2conf_map, $category_list) = scan_dirs($work_dir);
 $feed_dir = determine_current_feed_dir($work_dir, $feed_name);
 ?>
 
-<script src="jquery-2.1.4.min.js"></script>
-<script src="jquery-ui-1.11.4/jquery-ui.min.js"></script>
+<script src="/jquery/jquery.min.js"></script>
+<script src="/jquery-ui/jquery-ui.min.js"></script>
 <script type="text/javascript">
 <?print_id2name_map($id2conf_map);?>
 </script>
@@ -242,7 +242,7 @@ var setAclHandler = function() {
                 $("#status").html(get_success_message("ACL 설정 성공"));
                 $("#setacl").val("ACL 설정 완료");
                 $("#setacl").button({disabled: true});
-                $("#feedly_link").attr('href', 'http://feedly.com/#subscription%2Ffeed%2Fhttp%3A%2F%2Fterzeron.net%2F' + feed_name + '.xml');
+                $("#feedly_link").attr('href', 'https://feedly.com/i/discover/sources/search/https://terzeron.net/' + feed_name + '.xml');
                 $("#feedly_link").css('display', 'block');
             }
         }

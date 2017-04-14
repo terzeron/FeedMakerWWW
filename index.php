@@ -1,22 +1,24 @@
+<?
+require_once "oauth/oauth_check.php";
+?>
 <!DOCTYPE HTML>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width" />
         <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
-        <script src="jquery-2.1.4.min.js"></script>
-        <script src="jquery-ui-1.11.4/jquery-ui.min.js"></script>
-	<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
-	<!--link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css"/-->
-        <link rel="stylesheet" href="jquery-ui-1.11.4/jquery-ui.min.css" />
+        <script src="/jquery/jquery.min.js"></script>
+        <script src="/jquery-ui/jquery-ui.min.js"></script>
+	    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="/jquery-ui/jquery-ui.min.css" />
         <link rel="stylesheet" href="style.css"/>
         <title>FeedMaker 관리</title>
     </head>
     <body>
         <script>
-        $(function() {
-            $( "#tabs" ).tabs();
-        });
+         $(function() {
+             $( "#tabs" ).tabs();
+         });
         </script>
         <div id="tabs">
             <ul>
