@@ -33,10 +33,10 @@ try {
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <title>Login</title>
-        <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-        <link href="/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet"/>
-        <link rel="stylesheet" type="text/css" href="theme.css"/>
+        <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="/bootstrap-honoka/dist/css/bootstrap.min.css" rel="stylesheet"/>
         <link href="/font-awesome/css/font-awesome.min.css" rel="stylesheet"/>
+        <link href="style.css" rel="stylesheet"/>
     </head>
     <body>
         <div class="col-sm-6 col-md-4 col-lg-3">

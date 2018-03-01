@@ -54,21 +54,8 @@ table {
 /*
   my style definition
 */
-body * { font-size: 10pt; margin: 0; padding: 0; }
+
+table, tr, th, td { border: 1px solid gray; padding: 2px; }
+h5 { font-weight: bold; }
 .xml { font-size: 70%; border: 1px solid gray; }
-h1 { font-size: 15pt; font-weight: bold; color: green; margin-top: 15px; margin-left: 0px; }
-h2 { font-size: 14pt; font-weight: bold; color: blue; margin-top: 15px; margin-left: 5px; }
-h3 { font-size: 13pt; font-weight: bold; color: darkgreen; margin-top: 15px; margin-left: 10px; }
-h4 { font-size: 12pt; font-weight: bold; color: darkblue; margin-top: 10px; margin-left: 15px; }
-h5 { font-size: 11pt; font-weight: normal; color: green; margin-top: 10px; margin-left: 20px; }
-.block { margin-top: 5px; margin-left: 25px; margin-bottom: 5px; border: 1px dashed #ddd; padding: 2px; }
-.block div { margin-bottom: 5px; }
-.c31 { color: red; }
-.c32 { color: green; }
-.c34 { color: blue; }
-.c35 { color: violet; }
-.c39 { color: black; }
-li { margin: 5px 5px 5px 5px; }
-br { margin: 0px; }
-th { padding: 5px; border: 1px gray solid; background-color: black; color: white; } 
-td { padding: 5px; border: 1px gray solid; }
+

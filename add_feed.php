@@ -12,8 +12,6 @@ list($id2conf_map, $category_list) = scan_dirs($work_dir);
 $feed_dir = determine_current_feed_dir($work_dir, $feed_name);
 ?>
 
-<script src="/jquery/jquery.min.js"></script>
-<script src="/jquery-ui/jquery-ui.min.js"></script>
 <script type="text/javascript">
 <?print_id2name_map($id2conf_map);?>
 </script>
@@ -50,15 +48,22 @@ $feed_dir = determine_current_feed_dir($work_dir, $feed_name);
     </div>
     
     <div class="panel-body">
-        <div>새로운 Feed 이름: <input type='text' id='feed_name' name='feed_name'/>.xml에 <input type='button' id='save' value='저장'/></div>
-        <span>
-            <input type='button' id='lint' value='XML lint 실행'/>
-            <input type='button' id='extract' value='추출 실행'/>
-            <input type='button' id='setacl' value='ACL 설정'/>
-            <input type='button' id='disable' value='비활성화'/>
-            <input type='button' id='remove' value='삭제'/>
-            <input type='button' id='reset' value='초기화'/>
-        </span>
+        <div>
+            <span>
+                새로운 Feed 이름: <input type='text' id='feed_name' name='feed_name'/>.xml에
+                <input type='button' id='save' value='저장'/>
+            </span>
+        </div>
+        <div>
+            <span>
+                <input type='button' id='lint' value='XML lint 실행'/>
+                <input type='button' id='extract' value='추출 실행'/>
+                <input type='button' id='setacl' value='ACL 설정'/>
+                <input type='button' id='disable' value='비활성화'/>
+                <input type='button' id='remove' value='삭제'/>
+                <input type='button' id='reset' value='초기화'/>
+            </span>
+        </div>
         <div id='status'></div>
     </div>
     <div>
@@ -242,7 +247,7 @@ var setAclHandler = function() {
                 $("#status").html(get_success_message("ACL 설정 성공"));
                 $("#setacl").val("ACL 설정 완료");
                 $("#setacl").button({disabled: true});
-                $("#feedly_link").attr('href', 'https://feedly.com/i/discover/sources/search/https://terzeron.net/' + feed_name + '.xml');
+                $("#feedly_link").attr('href', 'https://feedly.com/i/subsription/feed%2Fhttps://terzeron.net/' + feed_name + '.xml');
                 $("#feedly_link").css('display', 'block');
             }
         }
