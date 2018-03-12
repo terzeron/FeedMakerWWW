@@ -48,8 +48,10 @@ try {
                 <?} else {?>
                     <p>You're not logged in Facebook.</p>
                     <div>
-                        <a href="<?=$loginUrl?>" class="btn btn-block btn-social btn-facebook">
-                            <i class="fa fa-facebook"></i> Sign in with Facebook
+                        <a href="<?=$loginUrl?>">
+                            <button class="btn btn-primary btn-block btn-social btn-facebook">
+                                <i class="fa fa-facebook"></i> Sign in with Facebook
+                            </button>
                         </a>
                     </div>
                 <?}?>
