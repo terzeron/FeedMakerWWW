@@ -130,7 +130,7 @@ function extract_data($category_name, $feed_name)
 
     $cmd = "(\
                 . /Users/terzeron/.bashrc; \
-                pyenv shell v3.5.2; \
+                pyenv shell v3.6.2; \
                 pyenv activate --quiet; \
                 is_completed=\$(grep \"<is_completed>true\" conf.xml); \
                 recent_collection_list=\$([ -e newlist ] && find newlist -type f -mtime +144); \
