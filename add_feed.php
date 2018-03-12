@@ -247,7 +247,7 @@ var setAclHandler = function() {
                 $("#status").html(get_success_message("ACL 설정 성공"));
                 $("#setacl").val("ACL 설정 완료");
                 $("#setacl").button({disabled: true});
-                $("#feedly_link").attr('href', 'https://feedly.com/i/subsription/feed%2Fhttps://terzeron.net/' + feed_name + '.xml');
+                $("#feedly_link").attr('href', 'https://feedly.com/i/subscription/feed%2Fhttps://terzeron.net/' + feed_name + '.xml');
                 $("#feedly_link").css('display', 'block');
             }
         }
