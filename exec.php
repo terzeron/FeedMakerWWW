@@ -26,10 +26,10 @@ function get_feed_list($category_name)
     if (is_dir($category_path)) {
         if ($dh = opendir($category_path)) {
             while (($feed_name = readdir($dh))) {
-		if ($feed_name == "." or $feed_name == ".." or $feed_name[0] == "." or $feed_name[0] == "_") {
-		    continue;
-		}
-		$conf_file_path = $category_path . "/" . $feed_name . "/conf.xml";
+		        if ($feed_name == "." or $feed_name == ".." or $feed_name[0] == "." or $feed_name[0] == "_") {
+		            continue;
+		        }
+		        $conf_file_path = $category_path . "/" . $feed_name . "/conf.xml";
                 if (file_exists($conf_file_path)) {
                     array_push($feed_list, $feed_name);
                 }
@@ -46,22 +46,41 @@ function get_feed_content($category_name,  $sample_feed)
 {
     global $work_dir, $dir, $message;
 
-    $filepath = $work_dir . "/" . $category_name . "/" . $sample_feed . "/conf.xml";  
-    $xml_text = "";                                                           
+    $message = view($sample_feed, $category_name);
+    return 0;
+}
+
+
+function view($feed_name, $category_name="")
+{
+    global $work_dir, $dir;
+
+    if ($category_name == "") {
+        if ($dh = opendir($work_dir)) {
+            while (($dir_name = readdir($dh))) {
+                if (file_exists($work_dir . "/" . $dir_name . "/" . $feed_name) and file_exists($work_dir . "/" . $dir_name . "/" . $feed_name . "/conf.xml")) {
+                    $category_name = $dir_name;
+                    break;
+                }
+            }
+        }
+    }
+
+    $filepath = $work_dir . "/" . $category_name . "/" . $feed_name . "/conf.xml";
+    $content = "";                                                           
     if (file_exists($filepath)) {
         $fp = fopen($filepath, "r");                                                
         while (!feof($fp)) {                                                      
             $line = fread($fp, 4096);                                               
-            $xml_text .= $line;
+            $content .= $line;
         }
         fclose($fp);
     } else {
-        $message = "can't find such a feed, ${filepath}";
+        $content = "can't find such a feed, ${filepath}";
         return -1;
     }
 
-    $message = $xml_text;
-    return 0;
+    return $content;
 }
 
 
@@ -300,44 +319,43 @@ function exec_command()
 {
     global $message, $dir;
     
-    if ($_SERVER["REQUEST_METHOD"] != "POST"){
-        $message = "can't accept method '" . $_SERVER["REQUEST_METHOD"] . "'";
-        return -1;
-    }
-    $feed_name = $_POST["feed_name"];
-    if (!preg_match("/^[\w_\-\.]*$/", $feed_name)){
+    $feed_name = (array_key_exists("feed_name", $_POST) ? $_POST["feed_name"] : $_GET["feed_name"]);
+    if (!preg_match("/^[\w_\-\.]*$/", $feed_name)) {
         $message = "The feed name must be only alphanumeric word.";
         return -1;
     }
-    $category_name = $_POST["category_name"];
-    if (!preg_match("/^[\w_\-\.]*$/", $category_name)){
+    $category_name = (array_key_exists("category_name", $_POST) ? $_POST["category_name"] : $_GET["category_name"]);
+    if (!preg_match("/^[\w_\-\.]*$/", $category_name)) {
         $message = "The parent name must be only alphanumeric word.";
         return -1;
     }
-    $sample_feed = $_POST["sample_feed"];
-    if (!preg_match("/^[\w_\-\.]*$/", $sample_feed)){
+    $sample_feed = (array_key_exists("sample_feed", $_POST) ? $_POST["sample_feed"] : $_GET["sample_feed"]);
+    if (!preg_match("/^[\w_\-\.]*$/", $sample_feed)) {
         $message = "The sample feed name must be only alphanumeric word.";
         return -1;
     }
-    $command = $_POST["command"];
-    if ($command == "get_feed_list"){
+    $command = (array_key_exists("command", $_POST) ? $_POST["command"] : $_GET["command"]);
+    if ($command == "get_feed_list") {
         return get_feed_list($category_name);
-    } else if ($command == "get_feed_content"){
+    } else if ($command == "get_feed_content") {
         return get_feed_content($category_name, $sample_feed);
-    } else if ($command == "save"){
+    } else if ($command == "view") {
+        print(str_replace("&gt;", "&gt;<br>", htmlentities(view($feed_name))));
+        exit(0);
+    } else if ($command == "save") {
         return save($category_name, $feed_name);
-    } else if ($command == "lint"){
+    } else if ($command == "lint") {
         return lint($feed_name);
-    } else if ($command == "extract"){
+    } else if ($command == "extract") {
         return extract_data($category_name, $feed_name);
-    } else if ($command == "setacl"){
+    } else if ($command == "setacl") {
         return setacl($category_name, $feed_name, $sample_feed);
-    } else if ($command == "remove"){
+    } else if ($command == "remove") {
         return remove($category_name, $sample_feed);
-    } else if ($command == "disable"){
+    } else if ($command == "disable") {
         return disable($category_name, $sample_feed);
     } else {
-        $message = "can't identify the command";
+        $message = "can't identify the command '$command'";
         return -1;
     }
     
