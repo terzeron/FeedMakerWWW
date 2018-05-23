@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 
-$home_dir = "/Users/terzeron";
+$home_dir = "/home/terzeron";
 $work_dir = $home_dir . "/workspace/fma";
 $engine_dir = $home_dir . "/workspace/fm";
 $www_dir = $home_dir . "/public_html";

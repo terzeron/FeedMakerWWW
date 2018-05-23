@@ -26,7 +26,7 @@ function get_feed_list($category_name)
     if (is_dir($category_path)) {
         if ($dh = opendir($category_path)) {
             while (($feed_name = readdir($dh))) {
-		        if ($feed_name == "." or $feed_name == ".." or $feed_name[0] == "." or $feed_name[0] == "_") {
+		        if ($feed_name == "." or $feed_name == ".." or $feed_name[0] == ".") {
 		            continue;
 		        }
 		        $conf_file_path = $category_path . "/" . $feed_name . "/conf.xml";
@@ -148,15 +148,11 @@ function extract_data($category_name, $feed_name)
     }
 
     $cmd = "(\
-                . /Users/terzeron/.bashrc; \
-                pyenv shell v3.6.2; \
-                pyenv activate --quiet; \
+                . /home/terzeron/.bashrc; \
                 is_completed=\$(grep \"<is_completed>true\" conf.xml); \
                 recent_collection_list=\$([ -e newlist ] && find newlist -type f -mtime +144); \
-                if [ \"\$is_completed\" != \"\" -a \"\$recent_collection_list\" == \"\" ]; then run.sh -c; fi; \
-                run.sh) \
-                > $work_dir/$category_name/$feed_name/run.log \
-                2> $work_dir/$category_name/$feed_name/run.log";
+                if [ \"\$is_completed\" != \"\" -a \"\$recent_collection_list\" == \"\" ]; then run.py -c; fi; \
+                run.py)";
     $result = shell_exec($cmd);
     if (preg_match("/Error:/", $result)) {
         $message = "can't execute a 'extract' command '$cmd', $result";

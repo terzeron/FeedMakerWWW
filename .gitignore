@@ -4,3 +4,6 @@ diff.html
 .htaccess
 .htpasswd
 oauth/vendor
+db_conf.json
+vendor/
+composer.lock

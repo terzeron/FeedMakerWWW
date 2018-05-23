@@ -11,19 +11,19 @@ Requirements
 Preparation
 -----------
 
-You should set the environment variable 'FEED_MAKER_WWW_ADMIN'.
+You should set the environment variable 'FEED_MAKER_WWW_ADMIN_DIR'.
 
-`$ export FEED_MAKER_WWW_ADMIN=/User/terzeron/public_html/feed_maker_web`
+`$ export FEED_MAKER_WWW_ADMIN_DIR=$HOME/public_html/feed_maker_web`
 
-Also you should install Apache web server and                                                                                enable 'mod_php' module in the server configuration (httpd.conf).
+Also you should install Apache web server and enable 'mod_php' module in the server configuration (httpd.conf).
 You can reference the following example.
 
 ```
 LoadModule php5_module        /Applications/MAMP/bin/php/php5.6.7/modules/libphp5.so
 AddType application/x-httpd-php .php .phtml
 DirectoryIndex index.html index.php
-DocumentRoot "/Users/terzeron/public_html"
-<Directory "/Users/terzeron/public_html">
+DocumentRoot "/home/terzeron/public_html"
+<Directory "/home/terzeron/public_html">
     Options All
     AllowOverride All
     Order deny,allow
