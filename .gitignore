@@ -7,3 +7,5 @@ oauth/vendor
 db_conf.json
 vendor/
 composer.lock
+problems.db
+status.json

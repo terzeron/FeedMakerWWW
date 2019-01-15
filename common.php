@@ -7,6 +7,9 @@ $engine_dir = $home_dir . "/workspace/fm";
 $www_dir = $home_dir . "/public_html";
 
 
+list($id2conf_map, $category_list) = scan_dirs($work_dir);
+
+
 function print_line($line)
 {
     #$line = preg_replace("/</", "&lt;", $line);
@@ -31,7 +34,7 @@ function txt2html($content)
 		        print "</div>\n";
 		        $div_open = 0;
 	        }
-            $line = preg_replace("/^=====\s+([^=]+)\s+=====\s*$/", "<div class='panel panel-default'>\n<div class='panel-heading'>$1</div>\n<div class='panel-body'>\n", $line);
+            $line = preg_replace("/^=====\s+([^=]+)\s+=====\s*$/", "<div class='card'>\n<div class='card-header'>$1</div>\n<div class='card-body'>\n", $line);
 	        print_line($line);
 	        $div_open = 1;
 	    } elseif (preg_match("//", $line)) {
@@ -74,6 +77,7 @@ function scan_dirs($work_dir)
 			            }
 			            if (is_file($conf_file_path)) {
 			                $conf = read_conf_file($conf_file_path);
+                            $conf["feed_dir"] = $dir1;
 			                $id2conf_map[$dir2] = $conf;
 			            }
 		            }

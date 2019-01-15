@@ -6,7 +6,7 @@ The simple web pages written in PHP code.
 Requirements
 ------------
 1. jQuery
-  1. jquery & jquery-ui
+  1. jquery
 
 Preparation
 -----------
