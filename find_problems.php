@@ -1,7 +1,8 @@
-<?
-require "oauth/oauth_check.php";
+<?php
 require "common.php";
-
+if (!is_client_local_ip()) {
+    require "oauth/oauth_check.php";
+}
 $problems = file_get_contents("$work_dir/logs/find_problems.log");
 $status_json = file_get_contents("status.json");
 $list = json_decode($status_json, true);
@@ -13,10 +14,10 @@ $list = json_decode($status_json, true);
     <body>
         <?include("menu.html");?>
             
-        <div class="card">
+        <!--div class="card"-->
             <?=txt2html($problems)?>
 
-            <table class="table table-bordered table-condensed cf" id="no-more-tables">
+            <table class="col-md-12 col-lg-12 table table-bordered table-condensed cf" id="no-more-tables">
                 <thead class="cf">
                     <tr>
                         <th>이름</th>
@@ -49,7 +50,7 @@ $list = json_decode($status_json, true);
                         <tr>
                             <td data-title="이름" class='name'><?=$name?></td>
                             <td data-title="외부" class='external'>
-                                <a href='https://terzeron.net/<?=$feed_alias?>.xml' target='_blank'>
+                                <a href='https://terzeron.com/<?=$feed_alias?>.xml' target='_blank'>
                                     <?if ($feed_alias != $feed_name) {?>
                                         <strong><i><?=$feed_alias?></i></strong>
                                     <?} else {?>
@@ -58,16 +59,16 @@ $list = json_decode($status_json, true);
                                 </a>
                             </td>
                             <td data-title="내부" class='internal'>
-                                <a href='https://terzeron.net/xml/<?=$feed_name?>.xml' target='_blank'>
+                                <a href='https://terzeron.com/xml/<?=$feed_name?>.xml' target='_blank'>
                                     <?if ($feed_alias != $feed_name) {?>
                                         <?=$feed_name?>
                                     <?}?>
                                 </a>
                             </td>
-                            <td data-title="http request" class='http_request narrow'><?=$http_request?></td>
-                            <td data-title="htaccess" class='htaccess narrow'><?=$htaccess?></td>
-                            <td data-title="public_html" class='public_html narrow'><?=$public_html?></td>
-                            <td data-title="feedmaker" class='feedmaker narrow'><?=$feedmaker?></td>
+                            <td data-title="http request" class='http_request'><?=$http_request?></td>
+                            <td data-title="htaccess" class='htaccess'><?=$htaccess?></td>
+                            <td data-title="public_html" class='public_html'><?=$public_html?></td>
+                            <td data-title="feedmaker" class='feedmaker'><?=$feedmaker?></td>
                             <td data-title="last request date" class='last_request_date'><?=$last_request_date?></td>
                             <td data-title="관리" class='management'>
                                 <a href='add_feed.php?feed_dir=<?=$feed_dir?>&feed_name=<?=$feed_name?>'><?=$feed_name?></a>
@@ -76,6 +77,6 @@ $list = json_decode($status_json, true);
                     <?}?>
                 </tbody>
             </table>
-        </div>
+        <!--/div-->
     </body>
 </html>

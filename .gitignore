@@ -8,6 +8,6 @@ composer.lock
 oauth/vendor
 db_conf.json
 status.json
-conf.json
+*/conf.json
 problems.db
 run.log*

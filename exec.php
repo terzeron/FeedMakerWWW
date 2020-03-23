@@ -1,21 +1,5 @@
 <?php
-header("Cache-Control: no-cache; must-revalidate;");
-error_reporting(E_ALL);
-
-require_once("common.php");
-
-$message = "";
-$dir = "xmls";
-
-date_default_timezone_set("Asia/Seoul");
-
-
-function get_time_str()
-{
-    $now = new DateTime();
-    return $now->format("YmdHis");
-}
-
+require("common.php");
 
 function get_feed_list($category_name)
 {
@@ -94,7 +78,6 @@ function save($category_name, $feed_name)
         return -1;
     }
 
-    // save
     $text = $_POST["xml_text"];
     $fp = fopen("$dir/${feed_name}.xml", "w");
     if (!$fp) {
@@ -107,14 +90,6 @@ function save($category_name, $feed_name)
         return -1;
     }
     fclose($fp);
-
-    // git add
-    $cmd = "git add $dir/${feed_name}.xml";
-    $result = shell_exec($cmd);
-    if (preg_match("/Error:/", $result)) {
-        $message = "can't execute a 'save' command '$cmd', $result";
-        return -1;
-    }
     
     return 0;
 }
@@ -124,11 +99,31 @@ function lint($feed_name)
 {
     global $dir, $message;
 
-    // lint
     $cmd = "/usr/bin/xmllint --noout $dir/${feed_name}.xml";
     $result = system($cmd);
     if ($result != "") {
-        $message = "can't execute a 'lint' command";
+        $message = "can't execute a 'lint' command or fail to validate the configuration file";
+        return -1;
+    }
+
+    return 0;
+}
+
+function install($category_name, $feed_name)
+{
+    global $home_dir, $engine_dir, $work_dir, $www_dir, $dir, $message;
+
+    mkdir("${work_dir}/${category_name}/${feed_name}");
+    chdir("${work_dir}/${category_name}/${feed_name}");
+    if (!rename("${www_dir}/fm/xmls/${feed_name}.xml", "${work_dir}/${category_name}/${feed_name}/conf.xml")) {
+        $message = "can't rename '${www_dir}/fm/xmls/${feed_name}.xml' to '${work_dir}/${category_name}/${feed_name}/conf.xml'";
+        return -1;
+    }
+
+    $cmd = "cd ${work_dir}/${category_name}/${feed_name}; git add conf.xml > /dev/null; git commit -m 'add some new feeds' > /dev/null";
+    $result = shell_exec($cmd);
+    if (preg_match("/Error:/", $result)) {
+        $message = "can't add new feed configuration file to git repo, '$cmd', $result";
         return -1;
     }
 
@@ -140,22 +135,10 @@ function extract_data($category_name, $feed_name)
 {
     global $home_dir, $engine_dir, $work_dir, $www_dir, $dir, $message;
 
-    mkdir("${work_dir}/${category_name}/${feed_name}");
-    chdir("${work_dir}/${category_name}/${feed_name}");
-    if (!rename("${www_dir}/fm/xmls/${feed_name}.xml", "${work_dir}/${category_name}/${feed_name}/conf.xml")) {
-        $message = "can't rename the conf file";
-        return -1;
-    }
-
-    $cmd = "(\
-                . /home/terzeron/.bashrc; \
-                is_completed=\$(grep \"<is_completed>true\" conf.xml); \
-                recent_collection_list=\$([ -e newlist ] && find newlist -type f -mtime +144); \
-                if [ \"\$is_completed\" != \"\" -a \"\$recent_collection_list\" == \"\" ]; then run.py -c; fi; \
-                run.py)";
+    $cmd = "cd ${work_dir}/${category_name}/${feed_name}; bash -c '(. /home/terzeron/.zshrc; . /home/terzeron/workspace/fm/bin/setup.sh; is_completed=\$(grep \"<is_completed>true\" conf.xml); recent_collection_list=\$([ -e newlist ] && find newlist -type f -mtime +144); if [ \"\$is_completed\" != \"\" -a \"\$recent_collection_list\" == \"\" ]; then run.py -c; fi; run.py)'";
     $result = shell_exec($cmd);
     if (preg_match("/Error:/", $result)) {
-        $message = "can't execute a 'extract' command '$cmd', $result";
+        $message = "can't extract the feed, '$cmd', $result";
         return -1;
     }
     $message = $cmd . "," . $result;
@@ -184,12 +167,18 @@ function setacl($category_name, $feed_name, $sample_feed)
         $message = "can't open file '$infile' for writing";
         return -1;
     }
+    $did_write = 0;
     while (!feof($infp)) {
         $content = fgets($infp);
-        if (preg_match("/${sample_feed}\\\.xml/", $content)) {
+        if ($did_write == 0 && preg_match("/${sample_feed}\\\.xml/", $content)) {
             fputs($outfp, "RewriteRule\t^$feed_name\\.xml\$\txml/$feed_name\\.xml\n");
+            $did_write = 1;
         }
         fputs($outfp, $content);
+        if ($did_write == 0 && preg_match("/^\#.*\(${category_name}\)/", $content)) {
+            fputs($outfp, "RewriteRule\t^$feed_name\\.xml\$\txml/$feed_name\\.xml\n");
+            $did_write = 1;
+        }
     }
     fclose($outfp);
     fclose($infp);
@@ -207,10 +196,6 @@ function remove($category_name, $sample_feed)
 {
     global $work_dir, $www_dir, $dir, $message;
 
-    // 
-    // ACL 설정 제거
-    //
-
     $time_str = get_time_str();
     $cmd = "cp ${www_dir}/.htaccess ${www_dir}/.htaccess.$time_str";
     $ret = shell_exec($cmd);
@@ -243,10 +228,7 @@ function remove($category_name, $sample_feed)
         return -1;
     }
     
-    //
-    // 피드 디렉토리 정리
-    //
-    $cmd = "rm -f ${www_dir}/xml/${sample_feed}.xml; cd ${work_dir}/${category_name}; git rm ${sample_feed}/conf.xml > /dev/null; rm -rf ${sample_feed}";
+    $cmd = "rm -f ${www_dir}/xml/${sample_feed}.xml; cd ${work_dir}/${category_name}; git rm ${sample_feed}/conf.xml > /dev/null; git commit -m 'remove unnecessary feeds' > /dev/null; rm -rf ${sample_feed}";
     $result = system($cmd);
     if ($result != "") { 
         $message = "can't clean the feed directory, $result";
@@ -261,10 +243,6 @@ function disable($category_name, $sample_feed)
 {
     global $work_dir, $www_dir, $dir, $message;
 
-    // 
-    // ACL 설정 제거
-    //
-
     $time_str = get_time_str();
     $cmd = "cp ${www_dir}/.htaccess ${www_dir}/.htaccess.$time_str";
     $ret = shell_exec($cmd);
@@ -297,10 +275,7 @@ function disable($category_name, $sample_feed)
         return -1;
     }
     
-    //
-    // 피드 디렉토리 정리
-    //
-    $cmd = "rm -f ${www_dir}/xml/${sample_feed}.xml; cd ${work_dir}/${category_name}; mv ${sample_feed}  _${sample_feed}; cd _${sample_feed}; rm -rf run.log error.log cookie.txt html newlist ${sample_feed}.xml ${sample_feed}.xml.old start_idx.txt";
+    $cmd = "rm -f ${www_dir}/xml/${sample_feed}.xml; cd ${work_dir}/${category_name}; git mv ${sample_feed} _${sample_feed} > /dev/null; git commit -m 'disable feed '${sample_feed} > /dev/null; cd _${sample_feed}; rm -rf run.log error.log cookie.txt html newlist ${sample_feed}.xml ${sample_feed}.xml.old start_idx.txt; ";
     $result = system($cmd);
     if ($result != "") { 
         $message = "can't clean the feed directory, $result";
@@ -342,6 +317,8 @@ function exec_command()
         return save($category_name, $feed_name);
     } else if ($command == "lint") {
         return lint($feed_name);
+    } else if ($command == "install") {
+        return install($category_name, $feed_name);
     } else if ($command == "extract") {
         return extract_data($category_name, $feed_name);
     } else if ($command == "setacl") {
@@ -360,5 +337,6 @@ function exec_command()
 
 
 $result = exec_command();
+print '{ "result" : "' . $result . '", "message" : ' . json_encode($message) . ' }';
 ?>
-{ "result" : "<?=$result?>", "message" : <?=json_encode($message)?> }
+

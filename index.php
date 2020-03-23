@@ -1,6 +1,8 @@
-<?
-require "oauth/oauth_check.php";
+<?php
 require "common.php";
+if (!is_client_local_ip()) {
+    require "oauth/oauth_check.php";
+}
 $content = file_get_contents("$work_dir/logs/all.log");
 ?>
 <!DOCTYPE HTML>

@@ -1,13 +1,30 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
+date_default_timezone_set("Asia/Seoul");
 
 $home_dir = "/home/terzeron";
 $work_dir = $home_dir . "/workspace/fma";
 $engine_dir = $home_dir . "/workspace/fm";
 $www_dir = $home_dir . "/public_html";
+$message = "";
+$dir = "xmls";
 
 
 list($id2conf_map, $category_list) = scan_dirs($work_dir);
+
+function is_client_local_ip() {
+    $ip = getenv('REMOTE_ADDR');
+    if (strstr($ip, "192.168.1.")) {
+        return True;
+    }
+    return False;
+}
+
+function get_time_str()
+{
+    $now = new DateTime();
+    return $now->format("YmdHis");
+}
 
 
 function print_line($line)
@@ -18,7 +35,13 @@ function print_line($line)
     $line = preg_replace("/\033\[0(;0)?m/", "</span>", $line);
     $line = preg_replace("/^==+$/", "<hr/>", $line);
     $line = preg_replace("/^\/(Users|home\d+).*\/(public_html(\/xml\/?)?)?/", "", $line);
-    print "<span>" . $line . "</span><br>\n";
+    if (preg_match("/^\s*$/", $line)) {
+
+    } elseif (preg_match("/^<\w+[^>]*>.*<\/\w+[^>]*>$/", $line)) {
+        print $line . "\n";
+    } else {
+        print "<span>" . $line . "</span><br>\n";
+    }
 }
 
 function txt2html($content)
