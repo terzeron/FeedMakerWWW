@@ -1,4 +1,4 @@
-<?
+<?php
 function read_config($config_file)
 {
     $fp = fopen($config_file, "r");

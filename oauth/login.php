@@ -1,5 +1,5 @@
 <?php
-require "vendor/autoload.php";
+require "../vendor/autoload.php";
 require "oauth_common.php";
 
 if (!session_id()) {
@@ -36,7 +36,7 @@ try {
         <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
         <link href="/bootstrap-honoka/dist/css/bootstrap.min.css" rel="stylesheet"/>
         <link href="/font-awesome/css/font-awesome.min.css" rel="stylesheet"/>
-        <link href="style.css" rel="stylesheet"/>
+        <link href="../style.css" rel="stylesheet"/>
     </head>
     <body>
         <div class="col-sm-6 col-md-4 col-lg-3">

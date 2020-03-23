@@ -1,5 +1,5 @@
-<?
-require "vendor/autoload.php";
+<?php
+require "../vendor/autoload.php";
 require "oauth_common.php";
 
 if (!session_id()) {

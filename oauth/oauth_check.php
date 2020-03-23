@@ -1,4 +1,4 @@
-<?
+<?php
 require "vendor/autoload.php";
 require "oauth_common.php";
 
@@ -12,6 +12,7 @@ if (array_key_exists("fb_access_token", $_SESSION)) {
 if (!isset($accessToken)) {
     print("You're not logged in Facebook. Redirecting to " . $config["login_url"]);
     header("Location: " . $config["login_url"]);
+    exit(0);
 }
 
 //var_dump($fb_oauth_config);
