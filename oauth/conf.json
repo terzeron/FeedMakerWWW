@@ -1,8 +1,0 @@
-{ 
-    "app_id": "1763789627240387",
-    "app_secret": "2c6791615d6cf1cfac9fe1ff1179a0bd",
-    "login_url": "https://terzeron.net/fm/oauth/login.php",
-    "callback_url": "https://terzeron.net/fm/oauth/fb_callback.php",
-    "start_url": "https://terzeron.net/fm/index.php",
-    "admin_email": "terzeron@gmail.com"
-}
