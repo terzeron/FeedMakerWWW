@@ -1,61 +1,59 @@
-/* http://meyerweb.com/eric/tools/css/reset/ 
-   v2.0 | 20110126
-   License: none (public domain)
-*/
-
-/*
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
-}
-*/
-/* HTML5 display-role reset for older browsers */
-/*
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
-body {
-	line-height: 1;
-}
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
-}
-*/
-
-/*
-  my style definition
-*/
-
 table, tr, th, td { border: 1px solid gray; padding: 2px; }
 h5 { font-weight: bold; }
 .xml { font-size: 70%; border: 1px solid gray; }
+.narrow { width: 1%;; }
+td { word-break: break-word; }
+th { word-break: keep-all; }
 
+@media only screen and (max-width: 768px) {
+    /* Force table to not be like tables anymore */
+    #no-more-tables table,
+    #no-more-tables thead,
+    #no-more-tables tbody,
+    #no-more-tables th,
+    #no-more-tables td,
+    #no-more-tables tr {
+        display: block;
+    }
+
+    /* Hide table headers (but not display: none;, for accessibility) */
+    #no-more-tables thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    #no-more-tables tr { border: 1px solid #ccc; }
+
+    #no-more-tables td {
+        /* Behave  like a "row" */
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 40%;
+        white-space: normal;
+        text-align:left;
+    }
+
+    #no-more-tables td:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 35%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align:left;
+        font-weight: bold;
+    }
+
+    /*
+    Label the data
+    */
+    #no-more-tables td:before { content: attr(data-title); }
+}
+
+.card, .card-header, .card-body {
+    padding: 5px;
+}
