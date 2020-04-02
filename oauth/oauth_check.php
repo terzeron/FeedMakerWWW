@@ -1,6 +1,5 @@
 <?php
 require "vendor/autoload.php";
-require "oauth_common.php";
 
 if (!session_id()) {
     session_start();
@@ -34,6 +33,8 @@ if ($user['email'] != $config["admin_email"]) {
     print("You're not authorized to this service. Redirecting to " . $config["login_url"]);
     header("Location: " . $config["login_url"]);
 }
+$_SESSION["user_email"] = $user["email"];
+$_SESSION["admin_email"] = $config["admin_email"];
 ?>
 
            

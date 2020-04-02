@@ -1,6 +1,10 @@
 <?php
 require "common.php";
-if (!is_client_local_ip()) {
+require "oauth/oauth_common.php";
+if (!session_id()) {
+    session_start();
+}
+if (!is_admin() and !is_client_local_ip()) {
     require "oauth/oauth_check.php";
 }
 $content = file_get_contents("$work_dir/logs/all.log");
