@@ -228,7 +228,7 @@ function remove($category_name, $sample_feed)
         return -1;
     }
     
-    $cmd = "rm -f ${www_dir}/xml/${sample_feed}.xml; cd ${work_dir}/${category_name}; git rm ${sample_feed}/conf.xml > /dev/null; git commit -m 'remove unnecessary feeds' > /dev/null; rm -rf ${sample_feed}";
+    $cmd = "rm -rf ${www_dir}/xml/${sample_feed}.xml ${www_dir}/xml/{img,pdf}/${sample_feed}; cd ${work_dir}/${category_name}; git rm ${sample_feed}/conf.xml > /dev/null; git commit -m 'remove unnecessary feeds' > /dev/null; rm -rf ${sample_feed}";
     $result = system($cmd);
     if ($result != "") { 
         $message = "can't clean the feed directory, $result";
