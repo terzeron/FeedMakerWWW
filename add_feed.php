@@ -1,8 +1,10 @@
 <?php
 require "common.php";
+
 if (!is_client_local_ip()) {
-    require "oauth/oauth_check.php";
+    require dirname(__FILE__) . "/oauth/oauth_check.php";
 }
+
 $feed_dir = (array_key_exists("feed_dir", $_GET) ? $_GET{"feed_dir"} : "");
 $feed_name = (array_key_exists("feed_name", $_GET) ? $_GET{"feed_name"} : "");
 $feed_dir = determine_current_feed_dir($work_dir, $feed_name);

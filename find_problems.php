@@ -1,8 +1,10 @@
 <?php
 require "common.php";
+
 if (!is_client_local_ip()) {
-    require "oauth/oauth_check.php";
+    require dirname(__FILE__) . "/oauth/oauth_check.php";
 }
+
 $problems = file_get_contents("$work_dir/logs/find_problems.log");
 $status_json = file_get_contents("status.json");
 $list = json_decode($status_json, true);

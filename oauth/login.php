@@ -1,6 +1,6 @@
 <?php
-require "../vendor/autoload.php";
-require "oauth_common.php";
+require dirname(__FILE__) . "/../vendor/autoload.php";
+require dirname(__FILE__) . "/../common.php";
 
 if (!session_id()) {
     session_start();

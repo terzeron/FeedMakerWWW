@@ -1,5 +1,5 @@
 <?php
-require "vendor/autoload.php";
+require dirname(__FILE__) . "/../vendor/autoload.php";
 
 if (!session_id()) {
     session_start();
