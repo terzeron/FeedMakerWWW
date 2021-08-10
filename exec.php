@@ -135,7 +135,7 @@ function extract_data($category_name, $feed_name)
 {
     global $home_dir, $engine_dir, $work_dir, $www_dir, $dir, $message;
 
-    $cmd = "cd ${work_dir}/${category_name}/${feed_name}; bash -c '(. /home/terzeron/.zshrc; . /home/terzeron/workspace/fm/bin/setup.sh; is_completed=\$(grep \"<is_completed>true\" conf.xml); recent_collection_list=\$([ -e newlist ] && find newlist -type f -mtime +144); if [ \"\$is_completed\" != \"\" -a \"\$recent_collection_list\" == \"\" ]; then run.py -c; fi; run.py)'";
+    $cmd = "cd ${work_dir}/${category_name}/${feed_name}; bash -c '(. /home/terzeron/.bashrc; . /home/terzeron/workspace/fm/bin/setup.sh; is_completed=\$(grep \"<is_completed>true\" conf.xml); recent_collection_list=\$([ -e newlist ] && find newlist -type f -mtime +144); if [ \"\$is_completed\" != \"\" -a \"\$recent_collection_list\" == \"\" ]; then run.py -c; fi; run.py)'";
     $result = shell_exec($cmd);
     if (preg_match("/Error:/", $result)) {
         $message = "can't extract the feed, '$cmd', $result";

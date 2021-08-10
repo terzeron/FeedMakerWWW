@@ -47,46 +47,6 @@ function get_time_str()
 }
 
 
-function print_line($line)
-{
-    #$line = preg_replace("/</", "&lt;", $line);
-    #$line = preg_replace("/>/", "&gt;", $line);
-    $line = preg_replace("/\033\[1;(\d+)m/", "<span class='c$1'>", $line);
-    $line = preg_replace("/\033\[0(;0)?m/", "</span>", $line);
-    $line = preg_replace("/^==+$/", "<hr/>", $line);
-    $line = preg_replace("/^\/(Users|home\d+).*\/(public_html(\/xml\/?)?)?/", "", $line);
-    if (preg_match("/^\s*$/", $line)) {
-
-    } elseif (preg_match("/^<\w+[^>]*>.*<\/\w+[^>]*>$/", $line)) {
-        print $line . "\n";
-    } else {
-        print "<span>" . $line . "</span><br>\n";
-    }
-}
-
-function txt2html($content)
-{
-    $lines = explode("\n", $content);
-    $div_open = 0;
-    foreach ($lines as $line) {
-        if (preg_match("/^\s*$/", $line) || $line == "Warning: can't get old list!") {
-            continue;
-        } elseif (preg_match("/^=====\s+([^=]+)\s+=====\s*$/", $line)) {
-	        if ($div_open == 1) {
-		        print "</div>\n";
-		        print "</div>\n";
-		        $div_open = 0;
-	        }
-            $line = preg_replace("/^=====\s+([^=]+)\s+=====\s*$/", "<div class='card'>\n<div class='card-header'>$1</div>\n<div class='card-body'>\n", $line);
-	        print_line($line);
-	        $div_open = 1;
-	    } elseif (preg_match("//", $line)) {
-            $line = preg_replace("/^---\s+([^\-]+)\s+---\s*$/", "<h5>$1</h5>\n", $line);
-	        print_line($line);
-	    }
-    }
-}
-
 function read_feed_conf_file($conf_file_path)
 {
     $xml_data = simplexml_load_file($conf_file_path);
